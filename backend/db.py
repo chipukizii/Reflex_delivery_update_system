@@ -3,20 +3,25 @@
 
 import time
 import random
+import copy
 
 # In-memory database tables
-_ORDERS = {}
-_RIDERS = {
+import copy
+
+_RIDER_SEED = {
     "RDR-01": {"id": "RDR-01", "name": "Kipchoge Mwangi", "phone": "+254711223344", "status": "AVAILABLE", "active_orders": []},
     "RDR-02": {"id": "RDR-02", "name": "Juma Omondi", "phone": "+254722334455", "status": "AVAILABLE", "active_orders": []},
     "RDR-03": {"id": "RDR-03", "name": "Faith Chebet", "phone": "+254733445566", "status": "AVAILABLE", "active_orders": []}
 }
+
+_ORDERS = {}
+_RIDERS = {}
 _AUDIT_LOGS = []
 
 
 def reset_db():
     """Reset database to default seed state for clean testing and demos."""
-    global _ORDERS, _AUDIT_LOGS
+    global _ORDERS, _RIDERS, _AUDIT_LOGS
     _ORDERS = {
         "ORD-501": {
             "id": "ORD-501",
@@ -53,6 +58,7 @@ def reset_db():
         {"order_id": "ORD-501", "actor": "RETAILER", "action": "ORDER_CREATED", "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")},
         {"order_id": "ORD-502", "actor": "RETAILER", "action": "ORDER_CREATED", "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")}
     ]
+    _RIDERS = copy.deepcopy(_RIDER_SEED)
     for rider in _RIDERS.values():
         rider["status"] = "AVAILABLE"
         rider["active_orders"] = []
