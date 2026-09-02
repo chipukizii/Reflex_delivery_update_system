@@ -25,6 +25,20 @@ on restart) is noted in the trade-off log.
 Started with the storage tables and read accessors, plus a reset_db()
 helper so tests and demos always begin from a known seed state.
 
+Added order creation, then rider assignment. Assignment is where the
+first real design question appeared: nothing stopped a second dispatcher
+from assigning an order that was already taken, because the function
+happily overwrote assigned_rider_id. I added a state check so assignment
+only succeeds from PENDING_DISPATCH.
+
+Two issues surfaced in review of the data layer. The first was a real
+defect: reset_db() rebuilt orders and audit logs but mutated the rider
+table in place, so rider state could leak between test runs. Fixed by
+rebuilding riders from a seed template. The second was the customer OTP
+being readable through the order accessors. I chose not to change that
+mid sprint, because the API and the test suite both depend on reading
+it, and recorded it as a trade-off instead.
+
 ### Challenge Encountered
 ### Adaptation Made
 ### Testing and Validation
