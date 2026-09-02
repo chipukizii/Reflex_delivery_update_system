@@ -111,3 +111,29 @@ def create_order(retailer_name, customer_name, customer_phone, dropoff_address, 
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
     })
     return order
+
+def assign_order_to_rider(order_id, rider_id):
+    """Dispatcher assigns an order to a rider with concurrency guard."""
+    order = get_order_by_id(order_id)
+    rider = get_rider_by_id(rider_id)
+
+    if not order:
+        return False, "Order not found", None
+    if not rider:
+        return False, "Rider not found", None
+    if order["status"] != "PENDING_DISPATCH":
+        return False, f"Order is already in state '{order['status']}'", None
+
+    order["status"] = "ASSIGNED"
+    order["assigned_rider_id"] = rider_id
+    if order_id not in rider["active_orders"]:
+        rider["active_orders"].append(order_id)
+    rider["status"] = "BUSY"
+
+    _AUDIT_LOGS.append({
+        "order_id": order_id,
+        "actor": "DISPATCHER",
+        "action": f"Assigned order to {rider['name']} ({rider_id})",
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+    })
+    return True, "Assigned successfully", order
