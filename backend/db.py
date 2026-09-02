@@ -2,6 +2,7 @@
 # Data access layer for Reflex Delivery Synchronization Service
 
 import time
+import random
 
 # In-memory database tables
 _ORDERS = {}
@@ -81,3 +82,32 @@ def get_audit_logs(order_id=None):
     if order_id:
         return [log for log in _AUDIT_LOGS if log["order_id"] == order_id.upper()]
     return _AUDIT_LOGS
+
+def create_order(retailer_name, customer_name, customer_phone, dropoff_address, item_desc, order_value_kes):
+    """Create a new delivery request by Retailer Staff."""
+    order_id = f"ORD-{random.randint(503, 999)}"
+    otp = f"{random.randint(1000, 9999)}"
+
+    order = {
+        "id": order_id,
+        "retailer": retailer_name or "Downtown Retailer",
+        "customer_name": customer_name,
+        "customer_phone": customer_phone,
+        "dropoff_address": dropoff_address,
+        "item_desc": item_desc,
+        "order_value_kes": float(order_value_kes or 0),
+        "status": "PENDING_DISPATCH",
+        "assigned_rider_id": None,
+        "otp_code": otp,
+        "created_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "picked_up_at": None,
+        "delivered_at": None
+    }
+    _ORDERS[order_id] = order
+    _AUDIT_LOGS.append({
+        "order_id": order_id,
+        "actor": "RETAILER",
+        "action": f"Created order {order_id} for {customer_name}",
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+    })
+    return order
