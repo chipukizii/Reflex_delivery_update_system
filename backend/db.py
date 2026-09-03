@@ -91,7 +91,15 @@ def get_audit_logs(order_id=None):
 
 def create_order(retailer_name, customer_name, customer_phone, dropoff_address, item_desc, order_value_kes):
     """Create a new delivery request by Retailer Staff."""
-    order_id = f"ORD-{random.randint(503, 999)}"
+    order_id = None
+    for _ in range(50):
+        candidate = f"ORD-{random.randint(503, 999)}"
+        if candidate not in _ORDERS:
+            order_id = candidate
+            break
+    if order_id is None:
+        return None
+
     otp = f"{random.randint(1000, 9999)}"
 
     order = {
@@ -214,3 +222,5 @@ def verify_and_deliver_order(order_id, rider_id, input_otp):
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
     })
     return True, "Delivered successfully with verified Proof-of-Delivery", order
+
+    
