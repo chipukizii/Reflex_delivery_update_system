@@ -60,12 +60,6 @@ successful delivery and the audit trail. I also checked by hand the two
 paths the suite does not reach: pickup attempted before assignment, and
 delivery attempted before pickup.
 
-### Challenge Encountered
-### Adaptation Made
-### Testing and Validation
-### Key Learning
-### Contribution Evidence
-
 ## Member 2: Backend API and Integration
 
 ## Member 3: Frontend UI and Interaction
