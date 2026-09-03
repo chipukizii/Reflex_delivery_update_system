@@ -91,14 +91,15 @@ def get_audit_logs(order_id=None):
 
 def create_order(retailer_name, customer_name, customer_phone, dropoff_address, item_desc, order_value_kes):
     """Create a new delivery request by Retailer Staff."""
-    order_id = None
-    for _ in range(50):
-        candidate = f"ORD-{random.randint(503, 999)}"
-        if candidate not in _ORDERS:
-            order_id = candidate
-            break
-    if order_id is None:
-        return None
+
+    existing_nums = []
+    for oid in _ORDERS.keys():
+        if isinstance(oid, str) and oid.startswith("ORD-"):
+            suffix = oid.split("-", 1)[1]
+            if suffix.isdigit():
+                existing_nums.append(int(suffix))
+    next_num = (max(existing_nums) if existing_nums else 500) + 1
+    order_id = f"ORD-{next_num:03d}"
 
     otp = f"secrets.randbelow(9000) + 1000"  # Generate a random 4-digit OTP
 
