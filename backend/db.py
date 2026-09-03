@@ -143,3 +143,25 @@ def assign_order_to_rider(order_id, rider_id):
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
     })
     return True, "Assigned successfully", order
+
+def rider_pickup_order(order_id, rider_id):
+    """Rider confirms pickup of parcel from retailer."""
+    order = get_order_by_id(order_id)
+    if not order:
+        return False, "Order not found", None
+    if order["assigned_rider_id"] != rider_id:
+        return False, "Order is not assigned to this rider", None
+    if order["status"] != "ASSIGNED":
+        return False, f"Cannot pickup order in state '{order['status']}'", None
+
+    order["status"] = "PICKED_UP"
+    order["picked_up_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    _AUDIT_LOGS.append({
+        "order_id": order_id,
+        "actor": f"RIDER:{rider_id}",
+        "action": "Package picked up from shop; in transit to customer",
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+    })
+    return True, "Picked up successfully", order
+
