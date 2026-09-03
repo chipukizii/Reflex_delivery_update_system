@@ -1,4 +1,4 @@
-# reflex_prototype/test_reflex_prototype.py
+# tests/test_reflex.py
 # Automated Test Suite for Reflex Delivery Synchronization & Verification Platform
 
 import unittest
