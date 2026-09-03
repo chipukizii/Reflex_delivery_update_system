@@ -95,7 +95,7 @@ class TestReflexPrototype(unittest.TestCase):
         self.assertIsNotNone(data['order']['delivered_at'])
 
     def test_08_order_tracking_audit_trail(self):
-        """Retailer and customer view complete immutable audit trail of the order."""
+        """Retailer and customer view complete audit trail of the order."""
         self.client.post('/api/dispatch/assign', json={"order_id": "ORD-501", "rider_id": "RDR-01"})
         self.client.post('/api/riders/pickup', json={"order_id": "ORD-501", "rider_id": "RDR-01"})
         correct_otp = db.get_order_by_id("ORD-501")["otp_code"]
