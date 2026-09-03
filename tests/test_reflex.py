@@ -33,6 +33,7 @@ class TestReflexPrototype(unittest.TestCase):
         self.assertTrue(data['success'])
         self.assertEqual(data['order']['status'], 'PENDING_DISPATCH')
         self.assertIsNotNone(data['order']['otp_code'])
+        self.assertRegex(data['order']['otp_code'], r'^\d{4}$')
 
     def test_02_dispatcher_unassigned_queue(self):
         """Dispatcher views queue of unassigned orders and available riders."""
