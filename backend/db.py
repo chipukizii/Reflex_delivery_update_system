@@ -1,4 +1,4 @@
-# reflex_prototype/db.py
+# backend/db.py
 # Data access layer for Reflex Delivery Synchronization Service
 
 import time
