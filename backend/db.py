@@ -119,7 +119,11 @@ def create_order(retailer_name, customer_name, customer_phone, dropoff_address, 
     return order
 
 def assign_order_to_rider(order_id, rider_id):
-    """Dispatcher assigns an order to a rider with concurrency guard."""
+    """Dispatcher assigns an order to a rider, guarded by order state."""
+
+    order_id = str(order_id).upper()
+    rider_id = str(rider_id).upper()
+
     order = get_order_by_id(order_id)
     rider = get_rider_by_id(rider_id)
 
@@ -146,6 +150,10 @@ def assign_order_to_rider(order_id, rider_id):
 
 def rider_pickup_order(order_id, rider_id):
     """Rider confirms pickup of parcel from retailer."""
+
+    order_id = str(order_id).upper()
+    rider_id = str(rider_id).upper()
+
     order = get_order_by_id(order_id)
     if not order:
         return False, "Order not found", None
@@ -167,6 +175,10 @@ def rider_pickup_order(order_id, rider_id):
 
 def verify_and_deliver_order(order_id, rider_id, input_otp):
     """Rider delivers package and enters customer 4-digit OTP code for instant proof-of-delivery."""
+
+    order_id = str(order_id).upper()
+    rider_id = str(rider_id).upper()
+
     order = get_order_by_id(order_id)
     if not order:
         return False, "Order not found", None
