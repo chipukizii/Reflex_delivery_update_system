@@ -192,7 +192,7 @@ def verify_and_deliver_order(order_id, rider_id, input_otp):
         _AUDIT_LOGS.append({
             "order_id": order_id,
             "actor": f"RIDER:{rider_id}",
-            "action": f"FAILED_DELIVERY_ATTEMPT: Invalid OTP entered ({input_otp})",
+            "action": "FAILED_DELIVERY_ATTEMPT: Invalid OTP entered",
             "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
         })
         return False, "Invalid Customer OTP PIN. Verification failed.", None
@@ -210,7 +210,7 @@ def verify_and_deliver_order(order_id, rider_id, input_otp):
     _AUDIT_LOGS.append({
         "order_id": order_id,
         "actor": f"RIDER:{rider_id}",
-        "action": f"DELIVERED: Verified via Customer OTP {input_otp}",
+        "action": "DELIVERED: Verified via Customer OTP",
         "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
     })
     return True, "Delivered successfully with verified Proof-of-Delivery", order
