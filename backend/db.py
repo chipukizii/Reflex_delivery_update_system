@@ -4,9 +4,9 @@
 import time
 import random
 import copy
+import secrets
 
 # In-memory database tables
-import copy
 
 _RIDER_SEED = {
     "RDR-01": {"id": "RDR-01", "name": "Kipchoge Mwangi", "phone": "+254711223344", "status": "AVAILABLE", "active_orders": []},
@@ -100,7 +100,7 @@ def create_order(retailer_name, customer_name, customer_phone, dropoff_address, 
     if order_id is None:
         return None
 
-    otp = f"{random.randint(1000, 9999)}"
+    otp = f"secrets.randbelow(9000) + 1000"  # Generate a random 4-digit OTP
 
     order = {
         "id": order_id,
