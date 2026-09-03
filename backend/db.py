@@ -165,3 +165,40 @@ def rider_pickup_order(order_id, rider_id):
     })
     return True, "Picked up successfully", order
 
+def verify_and_deliver_order(order_id, rider_id, input_otp):
+    """Rider delivers package and enters customer 4-digit OTP code for instant proof-of-delivery."""
+    order = get_order_by_id(order_id)
+    if not order:
+        return False, "Order not found", None
+    if order["assigned_rider_id"] != rider_id:
+        return False, "Order is not assigned to this rider", None
+    if order["status"] != "PICKED_UP":
+        return False, f"Order must be in PICKED_UP state before delivery. Current state: '{order['status']}'", None
+
+    # OTP Verification check
+    if str(input_otp).strip() != str(order["otp_code"]).strip():
+        _AUDIT_LOGS.append({
+            "order_id": order_id,
+            "actor": f"RIDER:{rider_id}",
+            "action": f"FAILED_DELIVERY_ATTEMPT: Invalid OTP entered ({input_otp})",
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+        })
+        return False, "Invalid Customer OTP PIN. Verification failed.", None
+
+    order["status"] = "DELIVERED"
+    order["delivered_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    # Release rider
+    rider = get_rider_by_id(rider_id)
+    if rider and order_id in rider["active_orders"]:
+        rider["active_orders"].remove(order_id)
+    if rider and len(rider["active_orders"]) == 0:
+        rider["status"] = "AVAILABLE"
+
+    _AUDIT_LOGS.append({
+        "order_id": order_id,
+        "actor": f"RIDER:{rider_id}",
+        "action": f"DELIVERED: Verified via Customer OTP {input_otp}",
+        "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+    })
+    return True, "Delivered successfully with verified Proof-of-Delivery", order
