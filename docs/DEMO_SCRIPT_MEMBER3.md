@@ -1,7 +1,7 @@
-# Member 3 – Live Demo Script
+# Live Demo Script
 ## Reflex Readiness Sprint
 
-**Speaker:** Member 3 (Kelly Wanjiru)
+**Speaker:** Team Lead
 **Timing:** 4:30 – 6:00 (1.5 minutes for live demo)
 **View Mode:** All 3 Personas (Executive Defense View)
 
@@ -49,7 +49,7 @@
 **Action:** Click "Verify & Deliver"
 
 **Script:**
-"Kipchoge arrives at the drop-off in Upperhill. If he enters the wrong PIN '0000', Reflex rejects the delivery instantly. When the customer provides their real OTP, Reflex verifies the PIN, marks the order DELIVERED, logs the timestamp in the immutable audit trail, and frees Kipchoge for his next job."
+"Kipchoge arrives at the drop-off in Upperhill. If he enters the wrong PIN '0000', Reflex rejects the delivery instantly. When the customer provides their real OTP, Reflex verifies the PIN, marks the order DELIVERED, logs the timestamp in the audit trail, and frees Kipchoge for his next job."
 
 ---
 

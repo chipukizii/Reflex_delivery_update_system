@@ -23,11 +23,11 @@ Reflex connects three personas into one synchronized delivery ledger:
 
 | Member | Role | Assigned File(s) | Responsibility |
 |:---|:---|:---|:---|
-| **Member 1** | Backend Core & Data Engine | `backend/db.py` | In-memory data store, Order FSM state machine, Customer OTP generation, concurrency guards |
+| **Member 1** | Backend Core, Data Engine & QA | `backend/db.py`<br>`tests/test_reflex.py` | In-memory data store, Order FSM state machine, Customer OTP generation, concurrency guards, automated test suite (8 tests) |
 | **Member 2** | Backend API & Integration | `backend/app.py` | Flask REST API routes, request parsing, JSON responses, error handling |
 | **Member 3** | Frontend UI & Interaction | `frontend/static/index.html` | 3-column dashboard, persona view switcher, order forms, real-time polling logic |
 | **Member 4** | Frontend Styling & Theming | `frontend/static/styles.css` | Modern CSS grid, dark/light mode variables, mobile phone frame, status badges |
-| **Member 5** | QA Testing & Technical Docs | `tests/test_reflex.py`<br>`docs/TRADE_OFF_LOG.md`<br>`docs/ARCHITECTURE.md` | Automated test suite (8 tests), Trade-off justification log, Architecture specification |
+| **Member 5** | Technical Docs & Architecture | `docs/TRADE_OFF_LOG.md`<br>`docs/ARCHITECTURE.md` | Trade-off justification log, Architecture specification document |
 
 ---
 
@@ -43,7 +43,7 @@ reflex_team/
 │       ├── index.html  → Member 3: Dashboard UI & persona switcher
 │       └── styles.css  → Member 4: Styling, dark/light theme, mobile frame
 ├── tests/
-│   └── test_reflex.py  → Member 5: Automated test suite (8 tests)
+│   └── test_reflex.py  → Member 1: Automated test suite (8 tests)
 ├── docs/
 │   ├── TRADE_OFF_LOG.md    → Member 5: Architectural trade-off log
 │   └── ARCHITECTURE.md     → Member 5: System architecture document
