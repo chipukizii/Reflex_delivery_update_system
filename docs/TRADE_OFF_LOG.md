@@ -81,3 +81,68 @@ production concern that does not change what the demo proves.
 **With more time.** Write audit entries to append only storage the
 application cannot rewrite, so a delivery record can support a dispute
 rather than merely describe one.
+
+## 6. Status updates rely on polling rather than push
+
+**What it is.** The frontend does not receive updates when an order
+changes. It re-requests the current state every 4 seconds, so a
+dispatcher or retailer sees a change up to one interval after it
+happens, and every open browser issues repeated requests whether or not
+anything has changed.
+
+**Acceptable because.** Polling needs no persistent connection and no
+extra infrastructure, and the lag is not perceptible at the scale of a
+demo with a handful of orders. Websockets would have added connection
+handling and reconnection logic for a responsiveness gain the panel
+would not see.
+
+**With more time.** Push updates over websockets or server sent events,
+so a status change reaches every watching client immediately and idle
+clients cost nothing.
+
+## 7. Frontend is plain HTML, CSS and JavaScript
+
+**What it is.** The interface is hand written with no framework, so
+state lives in the DOM and in ad hoc JavaScript rather than in a single
+managed store. Adding screens means adding more of the same by hand.
+
+**Acceptable because.** The application has three persona views and a
+small number of forms. A framework would have added a build step and a
+learning cost for a team working across five days, without changing what
+the interface does.
+
+**With more time.** Move to a framework once the screen count grows,
+so view state is managed in one place rather than being reconstructed
+from the DOM.
+
+## 8. No authentication or role enforcement
+
+**What it is.** Nothing verifies who is calling the API. The retailer,
+dispatcher and rider views are separated in the interface only, so any
+caller can hit any endpoint and act as any persona. This is what makes
+weak point 2 exploitable: without identity, there is no way to scope who
+may read an order and see its OTP.
+
+**Acceptable because.** The sprint was scoped to proving the delivery
+workflow. Building login, sessions and role checks would have consumed
+the time the workflow itself needed, and the demo runs as a trusted
+single operator.
+
+**With more time.** Add authentication and role based access, so a rider
+can only act on their own assignments and only the customer receives the
+OTP.
+
+## 9. The OTP is never actually delivered to the customer
+
+**What it is.** The system generates a verification code and checks it,
+but has no channel to send it. In the demo the code is read from the
+order record, which is not how it would reach a customer in reality.
+
+**Acceptable because.** Integrating an SMS provider means credentials,
+per message cost and an external dependency that can fail mid demo. The
+verification logic is the part being proven, and it is complete and
+tested independently of how the code travels.
+
+**With more time.** Send the OTP by SMS when the order is created, so
+the customer holds a code the rider has never seen, which is the
+property that makes it proof of delivery rather than a shared secret.
