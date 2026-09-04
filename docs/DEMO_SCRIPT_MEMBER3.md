@@ -1,4 +1,4 @@
-# Member 3 – Live Demo Script
+# Live Demo Script
 ## Reflex Readiness Sprint
 
 **Speaker:** Member 3 (Kelly Wanjiru)
