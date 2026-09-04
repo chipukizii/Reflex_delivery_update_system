@@ -1,7 +1,7 @@
 # Live Demo Script
 ## Reflex Readiness Sprint
 
-**Speaker:** Member 3 (Kelly Wanjiru)
+**Speaker:** Team Lead
 **Timing:** 4:30 – 6:00 (1.5 minutes for live demo)
 **View Mode:** All 3 Personas (Executive Defense View)
 
