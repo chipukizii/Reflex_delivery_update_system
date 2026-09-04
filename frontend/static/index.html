@@ -1,1 +1,346 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflex — Live Delivery Synchronization & Defense Demo</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
 
+    <header>
+        <div class="brand-title">
+            <h1>REFLEX</h1>
+            <span class="badge">Live Executive Defense Simulation</span>
+        </div>
+        <div class="header-actions">
+            <button class="btn-theme" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle light / dark mode">
+                <span id="themeIcon">&#9728;</span>
+            </button>
+            <button class="btn-reset" onclick="resetDemo()">↺ Reset Demo State</button>
+        </div>
+    </header>
+
+    <!-- DEMO INSTRUCTIONS BANNER -->
+    <div style="background:var(--primary); padding:0.3rem 0.8rem; border-radius:4px; font-size:0.75rem; color:white; margin-bottom:0.5rem; text-align:center;">
+        DEMO: Click "Log Delivery" → Assign to Rider → Pickup → Enter OTP.
+    </div>
+
+    <!-- Role & View Switcher Bar -->
+    <div class="view-switcher-bar">
+        <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-left:0.5rem;">View Mode:</span>
+        <button class="view-tab active" id="tab-all" onclick="switchView('all')">All 3 Personas (Executive Defense View)</button>
+        <button class="view-tab" id="tab-retailer" onclick="switchView('retailer')">Retailer Shop View (Shopkeeper Device)</button>
+        <button class="view-tab" id="tab-dispatcher" onclick="switchView('dispatcher')">Dispatcher View (Control Cockpit)</button>
+        <button class="view-tab" id="tab-rider" onclick="switchView('rider')">Rider Mobile View (Smartphone Screen)</button>
+    </div>
+
+    <!-- Active Persona Context Banner -->
+    <div class="persona-context-banner" id="contextBanner">
+        <span><strong>Current Mode</strong>: Full Executive Simulation (Showing real-time 3-way synchronization across all roles)</span>
+        <span style="color:var(--text-muted); font-size:0.75rem;">Sync Frequency: Sub-second</span>
+    </div>
+
+    <div class="grid-layout" id="mainGrid">
+
+        <!-- Column 1: Retailer Persona -->
+        <div class="persona-card" id="card-retailer">
+            <div class="persona-header">
+                <h2>1. Retailer Staff (Shop)</h2>
+                <span class="badge" style="background:#047857; color:#a7f3d0;">Origin</span>
+            </div>
+            
+            <form id="orderForm" onsubmit="createOrder(event)" style="display:flex; flex-direction:column; gap:0.75rem;">
+                <div class="form-group">
+                    <label>Customer Name</label>
+                    <input type="text" id="custName" value="Wanjiku Mwangi" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="text" id="custPhone" value="+254700112233" required>
+                </div>
+                <div class="form-group">
+                    <label>Delivery Address</label>
+                    <input type="text" id="dropoffAddr" value="Upperhill, KMA Centre, 4th Floor" required>
+                </div>
+                <div class="form-group">
+                    <label>Item Description & Value (KES)</label>
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="text" id="itemDesc" value="JBL Flip 6 Speaker" style="flex:2;" required>
+                        <input type="number" id="orderVal" value="14500" style="flex:1;" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-action">+ Log Delivery Request</button>
+            </form>
+
+            <h3 style="font-size:0.9rem; color:var(--text-muted); margin-top:0.5rem; text-transform:uppercase;">Active Shop Deliveries</h3>
+            <div id="retailerOrderList" style="display:flex; flex-direction:column; gap:0.6rem; max-height: 250px; overflow-y:auto;"></div>
+        </div>
+
+        <!-- Column 2: Dispatcher Persona -->
+        <div class="persona-card" id="card-dispatcher">
+            <div class="persona-header">
+                <h2>2. Dispatcher Cockpit</h2>
+                <span class="badge" style="background:#1d4ed8; color:#bfdbfe;">Central Hub</span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="font-size:0.9rem; color:var(--text-muted); text-transform:uppercase;">Unassigned Queue</h3>
+                <span id="unassignedCount" style="font-size:0.8rem; color:var(--primary);">0 pending</span>
+            </div>
+            
+            <div id="dispatcherQueueList" style="display:flex; flex-direction:column; gap:0.6rem; min-height:120px;"></div>
+
+            <h3 style="font-size:0.9rem; color:var(--text-muted); text-transform:uppercase; margin-top:0.5rem;">Fleet Status</h3>
+            <div id="fleetStatusList" style="display:flex; flex-direction:column; gap:0.5rem;"></div>
+        </div>
+
+        <!-- Column 3: Rider Persona -->
+        <div class="persona-card" id="card-rider">
+            <div class="persona-header">
+                <h2>3. Rider Mobile App</h2>
+                <select id="riderSelect" onchange="loadRiderTasks()" style="background:var(--input-bg); color:var(--text-main); border:1px solid var(--input-border); padding:0.25rem 0.5rem; border-radius:4px; font-size:0.8rem;">
+                    <option value="RDR-01">Kipchoge Mwangi (RDR-01)</option>
+                    <option value="RDR-02">Juma Omondi (RDR-02)</option>
+                    <option value="RDR-03">Faith Chebet (RDR-03)</option>
+                </select>
+            </div>
+
+            <h3 style="font-size:0.9rem; color:var(--text-muted); text-transform:uppercase;">My Assigned Route</h3>
+            <div id="riderTaskList" style="display:flex; flex-direction:column; gap:0.75rem;"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        // View Mode Switcher
+        function switchView(mode) {
+            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${mode}`).classList.add('active');
+
+            const grid = document.getElementById('mainGrid');
+            const cardRetailer = document.getElementById('card-retailer');
+            const cardDispatcher = document.getElementById('card-dispatcher');
+            const cardRider = document.getElementById('card-rider');
+            const banner = document.getElementById('contextBanner');
+
+            grid.classList.remove('single-view', 'rider-mobile-frame');
+
+            if (mode === 'all') {
+                cardRetailer.style.display = 'flex';
+                cardDispatcher.style.display = 'flex';
+                cardRider.style.display = 'flex';
+                banner.innerHTML = `<span><strong>Current Mode</strong>: All 3 Personas — Full Executive Defense View (real-time 3-way synchronization across all roles)</span><span style="color:var(--text-muted); font-size:0.75rem;">Simultaneous Sync</span>`;
+            } else if (mode === 'retailer') {
+                grid.classList.add('single-view');
+                cardRetailer.style.display = 'flex';
+                cardDispatcher.style.display = 'none';
+                cardRider.style.display = 'none';
+                banner.innerHTML = `<span><strong>Active Screen</strong>: <strong>Retailer Staff Tablet / Desktop</strong> (Luthuli Electronics Mart — Order Entry &amp; Active Status Tracker)</span><span style="color:var(--success); font-weight:700;">Retailer Persona</span>`;
+            } else if (mode === 'dispatcher') {
+                grid.classList.add('single-view');
+                cardRetailer.style.display = 'none';
+                cardDispatcher.style.display = 'flex';
+                cardRider.style.display = 'none';
+                banner.innerHTML = `<span><strong>Active Screen</strong>: <strong>Dispatcher Command Monitor</strong> (Central Dispatch Station — Fleet Assignment &amp; Queue Control)</span><span style="color:var(--primary); font-weight:700;">Dispatcher Persona</span>`;
+            } else if (mode === 'rider') {
+                grid.classList.add('single-view', 'rider-mobile-frame');
+                cardRetailer.style.display = 'none';
+                cardDispatcher.style.display = 'none';
+                cardRider.style.display = 'flex';
+                banner.innerHTML = `<span><strong>Active Screen</strong>: <strong>Field Rider Smartphone (PWA)</strong> (Mounted on Motorcycle Handlebar — Route &amp; OTP Verification)</span><span style="color:var(--warning); font-weight:700;">Rider Persona</span>`;
+            }
+        }
+
+        // Theme Toggle Logic
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            const icon = document.getElementById('themeIcon');
+            // ☾ moon = currently in dark mode (click to go light), ☀ sun = currently in light mode (click to go dark)
+            icon.innerHTML = theme === 'light' ? '&#9790;' : '&#9728;';
+            localStorage.setItem('reflex-theme', theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        }
+
+        // Initialize Theme from localStorage
+        const savedTheme = localStorage.getItem('reflex-theme') || 'dark';
+        applyTheme(savedTheme);
+
+        async function fetchState() {
+            try {
+                // Fetch Orders
+                const resOrders = await fetch(`${API_BASE}/orders`);
+                const dataOrders = await resOrders.json();
+                renderRetailerOrders(dataOrders.orders || []);
+
+                // Fetch Dispatcher Queue
+                const resDispatch = await fetch(`${API_BASE}/dispatch/unassigned`);
+                const dataDispatch = await resDispatch.json();
+                renderDispatcherQueue(dataDispatch.unassigned_orders || [], dataDispatch.available_riders || []);
+                renderFleetStatus(dataDispatch.available_riders || []);
+
+                // Fetch Rider Tasks
+                loadRiderTasks();
+            } catch (err) {
+                console.error("Sync error:", err);
+            }
+        }
+
+        function renderRetailerOrders(orders) {
+            const container = document.getElementById('retailerOrderList');
+            container.innerHTML = orders.map(o => `
+                <div class="order-card">
+                    <div class="order-meta">
+                        <strong>${o.id}</strong>
+                        <span class="status-pill status-${o.status}">${o.status.replace('_', ' ')}</span>
+                    </div>
+                    <div>${o.item_desc} (KES ${o.order_value_kes.toLocaleString()})</div>
+                    <div style="color:var(--text-muted); font-size:0.75rem;">To: ${o.customer_name} • ${o.dropoff_address}</div>
+                    <div class="otp-banner">OTP: <strong>${o.otp_code}</strong></div>
+                </div>
+            `).join('');
+        }
+
+        function renderDispatcherQueue(unassigned, riders) {
+            document.getElementById('unassignedCount').innerText = `${unassigned.length} orders`;
+            const container = document.getElementById('dispatcherQueueList');
+            if (unassigned.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; padding:1rem; text-align:center;">All orders dispatched!</div>`;
+                return;
+            }
+            container.innerHTML = unassigned.map(o => `
+                <div class="order-card" style="border-left: 4px solid var(--warning);">
+                    <div class="order-meta">
+                        <strong>${o.id}</strong>
+                        <span style="color:var(--warning); font-weight:700;">KES ${o.order_value_kes.toLocaleString()}</span>
+                    </div>
+                    <div>${o.item_desc} -> ${o.dropoff_address}</div>
+                    <div style="display:flex; gap:0.5rem; margin-top:0.4rem;">
+                        <select id="assign_rider_${o.id}" style="flex:2; background:var(--input-bg); color:var(--text-main); border:1px solid var(--input-border); border-radius:4px; font-size:0.75rem; padding:0.25rem;">
+                            ${riders.map(r => `<option value="${r.id}">${r.name} (${r.status})</option>`).join('')}
+                        </select>
+                        <button class="btn-action" style="flex:1; padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="assignOrder('${o.id}')">Assign</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderFleetStatus(riders) {
+            const container = document.getElementById('fleetStatusList');
+            container.innerHTML = riders.map(r => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:var(--order-card-bg); border:1px solid var(--order-card-border); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem;">
+                    <span><strong>${r.name}</strong></span>
+                    <span style="color:${r.status === 'AVAILABLE' ? 'var(--success)' : 'var(--warning)'}; font-weight:600;">${r.status} (${r.active_orders.length} active)</span>
+                </div>
+            `).join('');
+        }
+
+        async function loadRiderTasks() {
+            const riderId = document.getElementById('riderSelect').value;
+            const res = await fetch(`${API_BASE}/riders/${riderId}/tasks`);
+            const data = await res.json();
+            const container = document.getElementById('riderTaskList');
+            const tasks = data.tasks || [];
+
+            if (tasks.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; padding:1.5rem; text-align:center;">No active tasks assigned to this rider.</div>`;
+                return;
+            }
+
+            container.innerHTML = tasks.map(o => `
+                <div class="order-card" style="border-left: 4px solid var(--primary);">
+                    <div class="order-meta">
+                        <strong>${o.id}</strong>
+                        <span class="status-pill status-${o.status}">${o.status.replace('_', ' ')}</span>
+                    </div>
+                    <div>Item: <strong>${o.item_desc}</strong></div>
+                    <div>Drop-off: ${o.dropoff_address}</div>
+                    <div style="color:var(--primary); font-size:0.8rem;">Customer: ${o.customer_name} (${o.customer_phone})</div>
+
+                    ${o.status === 'ASSIGNED' ? `
+                        <button class="btn-action btn-warning" style="margin-top:0.4rem;" onclick="pickupOrder('${o.id}', '${riderId}')">Confirm Package Pickup</button>
+                    ` : ''}
+
+                    ${o.status === 'PICKED_UP' ? `
+                        <div style="display:flex; gap:0.4rem; margin-top:0.4rem;">
+                            <input type="text" id="otp_input_${o.id}" placeholder="Enter Customer OTP" style="flex:2; background:var(--input-bg); color:var(--text-main); border:1px solid var(--input-border); border-radius:4px; padding:0.3rem; font-size:0.8rem;">
+                            <button class="btn-action btn-success" style="flex:1; font-size:0.75rem;" onclick="deliverOrder('${o.id}', '${riderId}')">Verify & Deliver</button>
+                        </div>
+                    ` : ''}
+
+                    ${o.status === 'DELIVERED' ? `
+                        <div style="color:var(--success); font-weight:700; margin-top:0.3rem; font-size:0.8rem;">DELIVERED at ${o.delivered_at}</div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function createOrder(e) {
+            e.preventDefault();
+            const payload = {
+                retailer_name: "Luthuli Electronics Mart",
+                customer_name: document.getElementById('custName').value,
+                customer_phone: document.getElementById('custPhone').value,
+                dropoff_address: document.getElementById('dropoffAddr').value,
+                item_desc: document.getElementById('itemDesc').value,
+                order_value_kes: parseFloat(document.getElementById('orderVal').value)
+            };
+            await fetch(`${API_BASE}/orders`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            fetchState();
+        }
+
+        async function assignOrder(orderId) {
+            const riderId = document.getElementById(`assign_rider_${orderId}`).value;
+            await fetch(`${API_BASE}/dispatch/assign`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderId, rider_id: riderId })
+            });
+            fetchState();
+        }
+
+        async function pickupOrder(orderId, riderId) {
+            await fetch(`${API_BASE}/riders/pickup`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderId, rider_id: riderId })
+            });
+            fetchState();
+        }
+
+        async function deliverOrder(orderId, riderId) {
+            const otpCode = document.getElementById(`otp_input_${orderId}`).value;
+            const res = await fetch(`${API_BASE}/riders/deliver`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_id: orderId, rider_id: riderId, otp_code: otpCode })
+            });
+            const data = await res.json();
+            if (!data.success) {
+                alert(`Verification Error: ${data.error}`);
+            }
+            fetchState();
+        }
+
+        async function resetDemo() {
+            await fetch(`${API_BASE}/system/reset`, { method: 'POST' });
+            fetchState();
+        }
+
+        // Initial sync and poll every 4 seconds
+        fetchState();
+        setInterval(fetchState, 4000);
+    </script>
+</body>
+</html>
