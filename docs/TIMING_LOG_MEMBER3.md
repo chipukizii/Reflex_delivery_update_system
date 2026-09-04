@@ -1,4 +1,4 @@
-# Member 3 – Timing Log
+# Timing Log
 ## Reflex Readiness Sprint
 
 ---
