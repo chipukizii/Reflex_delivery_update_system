@@ -125,7 +125,7 @@
                 // Fetch Orders
                 const resOrders = await fetch(`${API_BASE}/orders`);
                 const dataOrders = await resOrders.json();
-                renderRetailerOrders(dataOrders.orders || []);
+                await renderRetailerOrders(dataOrders.orders || []);
 
                 // Fetch Dispatcher Queue
                 const resDispatch = await fetch(`${API_BASE}/dispatch/unassigned`);
@@ -140,9 +140,15 @@
             }
         }
 
-        function renderRetailerOrders(orders) {
+        async function renderRetailerOrders(orders) {
             const container = document.getElementById('retailerOrderList');
-            container.innerHTML = orders.map(o => `
+            const trackedOrders = await Promise.all(orders.map(async o => {
+                const response = await fetch(`${API_BASE}/orders/${o.id}/tracking`);
+                const tracking = await response.json();
+                return { order: o, auditTrail: tracking.audit_trail || [] };
+            }));
+
+            container.innerHTML = trackedOrders.map(({ order: o, auditTrail }) => `
                 <div class="order-card">
                     <div class="order-meta">
                         <strong>${o.id}</strong>
@@ -150,7 +156,20 @@
                     </div>
                     <div>${o.item_desc} (KES ${o.order_value_kes.toLocaleString()})</div>
                     <div style="color:var(--text-muted); font-size:0.75rem;">To: ${o.customer_name} • ${o.dropoff_address}</div>
-                    <div class="otp-banner">Customer SMS OTP for <strong>${o.id}</strong>: <strong>${o.otp_code}</strong></div>
+                    <div class="otp-banner">Customer OTP for <strong>${o.id}</strong>: <strong>${o.otp_code}</strong></div>
+                    <div style="margin-top:0.6rem; border-top:1px solid var(--border-color); padding-top:0.5rem;">
+                        <div style="font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Audit Trail</div>
+                        ${auditTrail.length ? `
+                            <div style="display:flex; flex-direction:column; gap:0.3rem; margin-top:0.35rem;">
+                                ${auditTrail.map(event => `
+                                    <div style="font-size:0.72rem; color:var(--text-muted);">
+                                        <strong style="color:var(--text-main);">${event.actor}</strong> ${event.action}
+                                        <span style="display:block; font-size:0.68rem;">${event.timestamp}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<div style="font-size:0.72rem; color:var(--text-muted); margin-top:0.35rem;">No events recorded.</div>'}
+                    </div>
                 </div>
             `).join('');
         }
@@ -284,7 +303,7 @@
                     ${o.status === 'PICKED_UP' ? `
                         <div style="background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:8px; margin-top:0.6rem;">
                             <div style="font-size:0.75rem; color:#f59e0b; font-weight:700;">🚀 STEP 2: DROP-OFF &amp; OTP VERIFICATION</div>
-                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">At destination: ask customer for <strong>${o.id}</strong>'s 4-digit SMS OTP:</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">At destination: ask customer for <strong>${o.id}</strong>'s 4-digit OTP:</div>
                             <div style="display:flex; gap:0.4rem; margin-top:0.5rem;">
                                 <input type="text" id="otp_input_${o.id}" maxlength="4" placeholder="4-Digit PIN" style="flex:2; background:var(--input-bg); color:var(--text-main); border:2px solid var(--primary); border-radius:6px; padding:0.4rem; font-size:0.95rem; font-weight:700; text-align:center; letter-spacing:4px;">
                                 <button class="btn-action btn-success" style="flex:1.4; font-size:0.78rem; font-weight:700;" onclick="deliverOrder('${o.id}', '${riderId}')">
@@ -296,7 +315,7 @@
 
                     ${o.status === 'DELIVERED' ? `
                         <div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:6px; padding:8px; margin-top:0.6rem; color:var(--success); font-weight:700; font-size:0.8rem;">
-                            ✓ DELIVERED: Proof-of-delivery verified via Customer SMS OTP at ${o.delivered_at}
+                            ✓ DELIVERED: Proof-of-delivery verified via Customer OTP at ${o.delivered_at}
                         </div>
                     ` : ''}
                 </div>
