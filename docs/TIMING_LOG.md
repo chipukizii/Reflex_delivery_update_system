@@ -1,83 +1,102 @@
 # Timing Log
-## Reflex Readiness Sprint
+
+Timings from two full rehearsals of the 10-minute presentation plus
+10-minute cross-examination.
+
+## Slide ownership
+
+Fixed across both runs. Whoever owns a slide takes the first question
+on it.
+
+| Section | Owner |
+|---|---|
+| Slide 1, Problem | Veronica |
+| Slide 2, Solution | Chipukizii, team lead |
+| Slide 3, Architecture | Member 5, Grace |
+| Live demo | Member 1, Alex |
+| Slide 4, Trade-offs | Member 1, Alex |
+| Slide 5, Roadmap | Member 3, Kelly |
 
 ---
 
-## Live Run – Real Demo (04/09/2026)
+## Dry Run 1
 
-**Date:** 04/09/2026
-**Duration:** 1:50 minutes
+**Date:** [date]
+**Present:** [names]
+**Total presentation time:** [mm:ss], target 10:00
 
-| Section | Time |
-|---------|------|
-| Demo Started | 0:00 |
-| Step 1: Log Delivery | 0:00 – 0:22 |
-| Step 2: Assign Order | 0:22 – 0:40 |
-| Step 3: Pickup | 0:40 – 0:58 |
-| Step 4: Wrong OTP (Rejected) | 0:58 – 1:10 |
-| Step 5: Right OTP (Delivered) | 1:10 – 1:25 |
-| Step 6: Audit Trail | 1:25 – 1:35 |
-| Closing | 1:35 – 1:50 |
+| Section | Owner | Start | End | Duration |
+|---|---|---|---|---|
+| Slide 1, Problem | Veronica | | | |
+| Slide 2, Solution | Chipukizii, team lead | | | |
+| Slide 3, Architecture | Member 5, Grace | | | |
+| Live demo | Member 1, Alex | | | |
+| Slide 4, Trade-offs | Member 1, Alex | | | |
+| Slide 5, Roadmap | Member 3, Kelly | | | |
+| Cross-examination | all | [ ] | [ ] | [ ] |
 
-**Feedback:**
-- Wrong OTP rejection worked correctly (showed "Invalid OTP")
-- Audit trail logged the failed attempt
-- Correct OTP completed the delivery
-- Smooth transitions between steps
-- Good pace – ready for presentation
+**What went wrong:**
 
-**Issues Noticed:**
-- View mode switch breaks layout until refresh
-- Workaround: Run demo in "All 3 Personas" view
+- [ran long on which slide, by how much]
+- [which handoff was unclear]
+- [what broke or stalled in the demo]
+- [which question nobody could answer]
 
----
+**Fixed before run 2:**
 
-## Dry Run 1 (Practice)
-
-**Date:** 03/09/2026
-**Duration:** 2:15 minutes
-
-| Section | Time |
-|---------|------|
-| Demo Started | 0:00 |
-| Step 1: Log Delivery | 0:00 – 0:30 |
-| Step 2: Assign Order | 0:30 – 0:55 |
-| Step 3: Pickup | 0:55 – 1:20 |
-| Step 4: Deliver with OTP | 1:20 – 1:50 |
-| Closing | 1:50 – 2:15 |
-
-**Feedback:**
-- Opening was too slow – need to be more concise
-- Step 2 (Assign) took too long because I couldn't find the rider dropdown
-- Need to pre-select the rider before starting the demo
+- [what was actually changed, not what was intended]
 
 ---
 
-## Dry Run 2 (Practice)
+## Dry Run 2
 
-**Date:** 03/09/2026
-**Duration:** 1:50 minutes
+**Date:** [date]
+**Present:** [names]
+**Total presentation time:** [mm:ss], target 10:00
 
-| Section | Time |
-|---------|------|
-| Demo Started | 0:00 |
-| Step 1: Log Delivery | 0:00 – 0:22 |
-| Step 2: Assign Order | 0:22 – 0:40 |
-| Step 3: Pickup | 0:40 – 0:58 |
-| Step 4: Deliver with OTP | 0:58 – 1:25 |
-| Closing | 1:25 – 1:50 |
+| Section | Owner | Start | End | Duration |
+|---|---|---|---|---|
+| Slide 1, Problem | Veronica | | | |
+| Slide 2, Solution | Chipukizii, team lead | | | |
+| Slide 3, Architecture | Member 5, Grace | | | |
+| Live demo | Member 1, Alex | | | |
+| Slide 4, Trade-offs | Member 1, Alex | | | |
+| Slide 5, Roadmap | Member 3, Kelly | | | |
+| Cross-examination | all | [ ] | [ ] | [ ] |
 
-**Feedback:**
-- Improved pacing – hit the target time!
-- Pre-selected rider before demo – saved 15 seconds
-- OTP entry was smooth – practiced the flow
+**What went wrong:**
+
+- [run 2 will not be clean either, record it]
+
+**Still outstanding going into the panel:**
+
+- [anything not fixed in time, named plainly]
 
 ---
 
-## Final Timing
+## Comparison
 
-| Dry Run | Date | Time | Status |
-|---------|------|------|--------|
-| Dry Run 1 | 03/09/2026 | 2:15 | Too slow |
-| Dry Run 2 | 03/09/2026 | 1:50 | Good |
-| Live Run | 04/09/2026 | 1:50 | ✅ Ready for presentation |
+| | Run 1 | Run 2 | Change |
+|---|---|---|---|
+| Total time | [ ] | [ ] | [ ] |
+| Longest section | [ ] | [ ] | [ ] |
+| Demo segment | [ ] | [ ] | [ ] |
+| Screen share handoff | [ ] | [ ] | [ ] |
+
+**What changed between runs:** [two or three sentences on what was
+adjusted and whether it worked]
+
+---
+
+## Cross-examination questions asked
+
+| Question | Category | Asked by | Answered by | Outcome |
+|---|---|---|---|---|
+| [question] | Architecture | [ ] | [ ] | strong / weak / no answer |
+| [question] | Trade-offs | [ ] | [ ] | |
+| [question] | Edge cases | [ ] | [ ] | |
+| [question] | Candour | [ ] | [ ] | |
+
+**Weakest answers, to prepare before the panel:**
+
+- [question, and what the better answer is]
