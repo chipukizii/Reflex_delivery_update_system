@@ -60,6 +60,16 @@ successful delivery and the audit trail. I also checked by hand the two
 paths the suite does not reach: pickup attempted before assignment, and
 delivery attempted before pickup.
 
+### Key Learning
+
+The most useful thing I learned was that a passing test suite proves less than it appears to. Every one of my eight tests passed against an OTP generator that produced a literal string instead of a number, because the tests only checked that an OTP existed and then submitted that same value back to itself. Nothing asserted the shape of what was generated. I added a format assertion afterwards, but the lesson is that assertions have to test the property you actually care about, not the presence of a field.
+
+Code review also changed my approach twice. It caught that I was generating a delivery verification code with random, which is predictable, when an OTP is a credential and belongs in secrets. And it caught that I was writing the OTP itself into the audit log, putting the credential in plaintext in a record any caller can read. Both were things I would not have found by testing, because neither breaks anything.
+
+### Contribution Evidence
+
+Implemented backend/db.py: in-memory store, seed reset, four-state order machine, guarded transitions, OTP generation and verification, audit logging. Wrote tests/test_reflex.py, eleven tests covering the lifecycle and the state guards. Authored docs/TRADE_OFF_LOG.md, nine entries, four of them co-authored with Member 5. Reviewed and merged Member 4's styling branch.
+
 ## Member 2: Backend API and Integration
 
 ## Member 3: Frontend UI and Interaction
@@ -167,6 +177,37 @@ I therefore adapted the documentation by:
 
 > **Good documentation is not just describing a system; it is understanding the system well enough to explain it accurately and simply.**
 
+### Initial Understanding
+
+My responsibility was to handle the frontend styling and theming of the Reflex delivery synchronization platform. I understood that the interface needed to support the three main personas — retailer staff, dispatcher, and rider — while remaining clear, responsive, and easy to use on different screen sizes.
+
+My main focus was `frontend/static/styles.css`, including the dashboard layout, dark/light themes, forms, buttons, order cards, status indicators, OTP banner, and the rider's mobile interface.
+
+### Implementation Approach
+
+I started by defining reusable CSS variables for the application's colours, backgrounds, borders, text, status states, OTP elements, and shadows. I created both dark-theme defaults and light-theme overrides so the interface could switch between themes consistently.
+
+I then implemented the main three-column dashboard layout and added a single-view layout for individual personas. I styled the persona cards, headers, forms, inputs, select fields, and action buttons to create a consistent visual structure.
+
+For delivery tracking, I added distinct status pills for `PENDING_DISPATCH`, `ASSIGNED`, `PICKED_UP`, and `DELIVERED`. This makes the current state of an order easier to identify at a glance.
+
+I also implemented the OTP banner using a distinct background, dashed border, and monospace font. For the rider interface, I created a mobile phone frame effect to reflect the intended budget Android smartphone experience.
+
+Finally, I added responsive CSS rules for tablet and mobile screen sizes. This allowed the three-column layout to collapse into a single-column layout on smaller screens and adjusted spacing, buttons, headers, and the rider frame accordingly.
+
+### Adaptation and Learning
+
+During implementation, I had to think beyond simply making the page look good and consider how the styling would work with the existing HTML structure and different personas. I learned the importance of using CSS variables and reusable classes because they make theme changes and future adjustments much easier.
+
+I also learned how responsive design can be handled using CSS Grid and media queries rather than creating completely separate layouts for different devices.
+
+### Testing and Validation
+
+I reviewed the implemented CSS against the assigned styling requirements, checking that the required theme variables, dashboard grid, persona cards, forms, buttons, status badges, OTP banner, rider mobile frame, and responsive breakpoints were included.
+
+I also resolved a CSS conflict when preparing my branch for the pull request by retaining my frontend styling changes while resolving the difference with the `main` branch.
+
+## Member 5: QA Testing and Technical Documentation
 
 ## Team-Level Adaptations
 

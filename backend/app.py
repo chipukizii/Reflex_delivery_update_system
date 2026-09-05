@@ -31,21 +31,60 @@ def list_orders():
     return jsonify({'success': True, 'count': len(orders), 'orders': orders})
 
 
+import re
+
 @app.route('/api/orders', methods=['POST'])
 def create_delivery_request():
     """Retailer staff logs a new delivery request."""
     data = request.get_json() or {}
     required_fields = ['customer_name', 'customer_phone', 'dropoff_address', 'item_desc']
     for field in required_fields:
-        if not data.get(field):
+        val = data.get(field)
+        if not val or not str(val).strip():
             return jsonify({'success': False, 'error': f"Missing required field: '{field}'"}), 400
+
+    # 1. Full Name Validation: Must take at least two names (first and last name)
+    customer_name = str(data.get('customer_name', '')).strip()
+    name_parts = customer_name.split()
+    if len(name_parts) < 2 or any(len(p) < 2 for p in name_parts):
+        return jsonify({
+            'success': False,
+            'error': "Customer name must include at least two names (e.g. First and Last name)."
+        }), 400
+
+    # 2. Phone Number Validation: Max 10 digits, numeric only (e.g. 0712345678)
+    customer_phone = str(data.get('customer_phone', '')).strip()
+    if not customer_phone.isdigit():
+        return jsonify({
+            'success': False,
+            'error': "Phone number must contain numbers only."
+        }), 400
+    if len(customer_phone) > 10:
+        return jsonify({
+            'success': False,
+            'error': f"Phone number cannot exceed 10 digits. Received {len(customer_phone)} digits."
+        }), 400
+    if len(customer_phone) < 10:
+        return jsonify({
+            'success': False,
+            'error': f"Phone number must be a valid 10-digit number (e.g. 0712345678). Received {len(customer_phone)} digits."
+        }), 400
+
+    # 3. Address and Description Validation
+    dropoff_address = str(data.get('dropoff_address', '')).strip()
+    if len(dropoff_address) < 5:
+        return jsonify({'success': False, 'error': "Delivery address must be at least 5 characters long."}), 400
+
+    item_desc = str(data.get('item_desc', '')).strip()
+    if len(item_desc) < 3:
+        return jsonify({'success': False, 'error': "Item description must be at least 3 characters long."}), 400
 
     order = db.create_order(
         retailer_name=data.get('retailer_name', 'Luthuli Electronics Mart'),
-        customer_name=data.get('customer_name'),
-        customer_phone=data.get('customer_phone'),
-        dropoff_address=data.get('dropoff_address'),
-        item_desc=data.get('item_desc'),
+        customer_name=customer_name,
+        customer_phone=customer_phone,
+        dropoff_address=dropoff_address,
+        item_desc=item_desc,
         order_value_kes=data.get('order_value_kes', 0)
     )
     return jsonify({
@@ -98,6 +137,17 @@ def assign_order():
     if not order_id or not rider_id:
         return jsonify({'success': False, 'error': 'order_id and rider_id are required'}), 400
 
+    # Fleet Guard: Verify rider exists and is NOT currently BUSY
+    rider = db.get_rider_by_id(rider_id)
+    if not rider:
+        return jsonify({'success': False, 'error': f"Rider '{rider_id}' not found"}), 404
+
+    if rider.get('status') == 'BUSY' or len(rider.get('active_orders', [])) > 0:
+        return jsonify({
+            'success': False,
+            'error': f"Cannot assign: Rider {rider['name']} ({rider_id}) is already BUSY with an active delivery."
+        }), 400
+
     success, msg, order = db.assign_order_to_rider(order_id, rider_id)
     if not success:
         return jsonify({'success': False, 'error': msg}), 400
@@ -146,12 +196,15 @@ def rider_deliver():
     data = request.get_json() or {}
     order_id = data.get('order_id')
     rider_id = data.get('rider_id')
-    otp_code = data.get('otp_code')
+    raw_otp = data.get('otp_code')
 
-    if not order_id or not rider_id or not otp_code:
+    if not order_id or not rider_id or not raw_otp:
         return jsonify({'success': False, 'error': 'order_id, rider_id, and otp_code are required'}), 400
 
-    success, msg, order = db.verify_and_deliver_order(order_id, rider_id, otp_code)
+    # Strip any accidental spaces (e.g. from letter-spacing or spacebar taps)
+    clean_otp = str(raw_otp).replace(' ', '').strip()
+
+    success, msg, order = db.verify_and_deliver_order(order_id, rider_id, clean_otp)
     if not success:
         return jsonify({'success': False, 'error': msg}), 400
 
