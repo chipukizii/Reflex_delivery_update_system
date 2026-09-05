@@ -106,7 +106,7 @@ The most significant change I made was adding a demo instructions banner above t
 
 1. **Frontend Architecture:** The UI uses a Single Page Application (SPA) approach with three personas sharing the same page. Executive View shows all three side-by-side for live demos.
 
-2. **HTTP Polling vs WebSockets:** Reflex uses 4-second polling to save battery on rider devices. The `fetchState()` function pulls updates from the backend. This is a deliberate trade-off – persistent WebSockets drain budget Android batteries within 4 hours.
+2. ** HTTP Polling vs WebSockets: Reflex uses 4-second polling for simplicity and ease of implementation. The fetchState() function pulls updates from the backend every 4 seconds so all three personas stay synced. The trade-off decision to use polling over WebSockets is documented in TRADE_OFF_LOG.md (Trade-Off 3: Optimistic Polling with Cache-Control vs. Persistent Full-Duplex WebSockets).
 
 3. **State Synchronization:** All three personas sync from the same backend state. Orders move through: PENDING_DISPATCH → ASSIGNED → PICKED_UP → DELIVERED. OTP verification is handled by the rider panel.
 
@@ -127,7 +127,7 @@ The most significant change I made was adding a demo instructions banner above t
 
 1. Git remotes matter – always check where you're pushing
 2. Executive View is the best mode for live presentations
-3. 4-second polling is a deliberate trade-off for battery life
+3. Polling was chosen for implementation simplicity, matching the rationale documented in TRADE_OFF_LOG.md
 4. The demo flow should be practiced until smooth
 5. Always work on a branch, not directly on `main`
 
