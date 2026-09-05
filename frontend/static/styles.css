@@ -233,11 +233,6 @@ header {
     align-items: start;
 }
 
-.grid-layout.single-view {
-    grid-template-columns: minmax(0, 800px);
-    justify-content: center;
-}
-
 /* === Persona Cards === */
 
 .persona-card {
@@ -565,4 +560,4 @@ header {
     .grid-layout.single-view.rider-mobile-frame .persona-card {
         min-height: 560px;
     }
-}with
+}

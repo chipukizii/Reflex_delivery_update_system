@@ -21,24 +21,10 @@
         </div>
     </header>
 
-    <!-- DEMO INSTRUCTIONS BANNER -->
-    <div style="background:var(--primary); padding:0.3rem 0.8rem; border-radius:4px; font-size:0.75rem; color:white; margin-bottom:0.5rem; text-align:center;">
-        DEMO: Click "Log Delivery" → Assign to Rider → Pickup → Enter OTP.
-    </div>
-
-    <!-- Role & View Switcher Bar -->
-    <div class="view-switcher-bar">
-        <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; margin-left:0.5rem;">View Mode:</span>
-        <button class="view-tab active" id="tab-all" onclick="switchView('all')">All 3 Personas (Executive Defense View)</button>
-        <button class="view-tab" id="tab-retailer" onclick="switchView('retailer')">Retailer Shop View (Shopkeeper Device)</button>
-        <button class="view-tab" id="tab-dispatcher" onclick="switchView('dispatcher')">Dispatcher View (Control Cockpit)</button>
-        <button class="view-tab" id="tab-rider" onclick="switchView('rider')">Rider Mobile View (Smartphone Screen)</button>
-    </div>
-
-    <!-- Active Persona Context Banner -->
-    <div class="persona-context-banner" id="contextBanner">
-        <span><strong>Current Mode</strong>: Full Executive Simulation (Showing real-time 3-way synchronization across all roles)</span>
-        <span style="color:var(--text-muted); font-size:0.75rem;">Sync Frequency: Sub-second</span>
+    <!-- Unified 3-in-1 Executive Synchronization Banner -->
+    <div class="persona-context-banner" style="margin: 12px 24px; display: flex; justify-content: space-between; align-items: center;">
+        <span><strong>Unified 3-Persona Ledger</strong>: Real-time synchronization across Retailer, Dispatcher, and Rider</span>
+        <span style="color:var(--primary); font-weight:700; font-size:0.8rem; background:rgba(59,130,246,0.15); padding:4px 12px; border-radius:12px; border:1px solid var(--primary);">Live Sync: 4s HTTP Poll</span>
     </div>
 
     <div class="grid-layout" id="mainGrid">
@@ -52,22 +38,22 @@
             
             <form id="orderForm" onsubmit="createOrder(event)" style="display:flex; flex-direction:column; gap:0.75rem;">
                 <div class="form-group">
-                    <label>Customer Name</label>
-                    <input type="text" id="custName" value="Wanjiku Mwangi" required>
+                    <label>Customer Name (First &amp; Last Name)</label>
+                    <input type="text" id="custName" value="Wanjiku Mwangi" placeholder="e.g. Wanjiku Mwangi (at least 2 names)" required minlength="4">
                 </div>
                 <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="text" id="custPhone" value="+254700112233" required>
+                    <label>Phone Number (10 Digits Max)</label>
+                    <input type="tel" id="custPhone" value="0700112233" maxlength="10" placeholder="e.g. 0700112233 (10 digits)" pattern="[0-9]{10}" required>
                 </div>
                 <div class="form-group">
                     <label>Delivery Address</label>
-                    <input type="text" id="dropoffAddr" value="Upperhill, KMA Centre, 4th Floor" required>
+                    <input type="text" id="dropoffAddr" value="Upperhill, KMA Centre, 4th Floor" minlength="5" required>
                 </div>
                 <div class="form-group">
                     <label>Item Description & Value (KES)</label>
                     <div style="display:flex; gap:0.5rem;">
-                        <input type="text" id="itemDesc" value="JBL Flip 6 Speaker" style="flex:2;" required>
-                        <input type="number" id="orderVal" value="14500" style="flex:1;" required>
+                        <input type="text" id="itemDesc" value="JBL Flip 6 Speaker" style="flex:2;" minlength="3" required>
+                        <input type="number" id="orderVal" value="14500" style="flex:1;" min="1" required>
                     </div>
                 </div>
                 <button type="submit" class="btn-action">+ Log Delivery Request</button>
@@ -99,7 +85,7 @@
         <div class="persona-card" id="card-rider">
             <div class="persona-header">
                 <h2>3. Rider Mobile App</h2>
-                <select id="riderSelect" onchange="loadRiderTasks()" style="background:var(--input-bg); color:var(--text-main); border:1px solid var(--input-border); padding:0.25rem 0.5rem; border-radius:4px; font-size:0.8rem;">
+                <select id="riderSelect" onchange="onRiderChange()" style="background:var(--input-bg); color:var(--text-main); border:1px solid var(--input-border); padding:0.25rem 0.5rem; border-radius:4px; font-size:0.8rem;">
                     <option value="RDR-01">Kipchoge Mwangi (RDR-01)</option>
                     <option value="RDR-02">Juma Omondi (RDR-02)</option>
                     <option value="RDR-03">Faith Chebet (RDR-03)</option>
@@ -114,45 +100,6 @@
 
     <script>
         const API_BASE = '/api';
-
-        // View Mode Switcher
-        function switchView(mode) {
-            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`tab-${mode}`).classList.add('active');
-
-            const grid = document.getElementById('mainGrid');
-            const cardRetailer = document.getElementById('card-retailer');
-            const cardDispatcher = document.getElementById('card-dispatcher');
-            const cardRider = document.getElementById('card-rider');
-            const banner = document.getElementById('contextBanner');
-
-            grid.classList.remove('single-view', 'rider-mobile-frame');
-
-            if (mode === 'all') {
-                cardRetailer.style.display = 'flex';
-                cardDispatcher.style.display = 'flex';
-                cardRider.style.display = 'flex';
-                banner.innerHTML = `<span><strong>Current Mode</strong>: All 3 Personas — Full Executive Defense View (real-time 3-way synchronization across all roles)</span><span style="color:var(--text-muted); font-size:0.75rem;">Simultaneous Sync</span>`;
-            } else if (mode === 'retailer') {
-                grid.classList.add('single-view');
-                cardRetailer.style.display = 'flex';
-                cardDispatcher.style.display = 'none';
-                cardRider.style.display = 'none';
-                banner.innerHTML = `<span><strong>Active Screen</strong>: <strong>Retailer Staff Tablet / Desktop</strong> (Luthuli Electronics Mart — Order Entry &amp; Active Status Tracker)</span><span style="color:var(--success); font-weight:700;">Retailer Persona</span>`;
-            } else if (mode === 'dispatcher') {
-                grid.classList.add('single-view');
-                cardRetailer.style.display = 'none';
-                cardDispatcher.style.display = 'flex';
-                cardRider.style.display = 'none';
-                banner.innerHTML = `<span><strong>Active Screen</strong>: <strong>Dispatcher Command Monitor</strong> (Central Dispatch Station — Fleet Assignment &amp; Queue Control)</span><span style="color:var(--primary); font-weight:700;">Dispatcher Persona</span>`;
-            } else if (mode === 'rider') {
-                grid.classList.add('single-view', 'rider-mobile-frame');
-                cardRetailer.style.display = 'none';
-                cardDispatcher.style.display = 'none';
-                cardRider.style.display = 'flex';
-                banner.innerHTML = `<span><strong>Active Screen</strong>: <strong>Field Rider Smartphone (PWA)</strong> (Mounted on Motorcycle Handlebar — Route &amp; OTP Verification)</span><span style="color:var(--warning); font-weight:700;">Rider Persona</span>`;
-            }
-        }
 
         // Theme Toggle Logic
         function applyTheme(theme) {
@@ -203,7 +150,7 @@
                     </div>
                     <div>${o.item_desc} (KES ${o.order_value_kes.toLocaleString()})</div>
                     <div style="color:var(--text-muted); font-size:0.75rem;">To: ${o.customer_name} • ${o.dropoff_address}</div>
-                    <div class="otp-banner">OTP: <strong>${o.otp_code}</strong></div>
+                    <div class="otp-banner">Customer SMS OTP for <strong>${o.id}</strong>: <strong>${o.otp_code}</strong></div>
                 </div>
             `).join('');
         }
@@ -213,8 +160,32 @@
             const container = document.getElementById('dispatcherQueueList');
             if (unassigned.length === 0) {
                 container.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; padding:1rem; text-align:center;">All orders dispatched!</div>`;
+                container._lastCacheKey = 'empty';
                 return;
             }
+
+            // CRITICAL FIX: If user is actively interacting with/focusing any dropdown, DO NOT re-render!
+            const activeElem = document.activeElement;
+            if (activeElem && activeElem.id && activeElem.id.startsWith('assign_rider_')) {
+                return;
+            }
+
+            // Smart Caching: Only re-render if unassigned orders or rider statuses actually changed
+            const newCacheKey = JSON.stringify({
+                orders: unassigned.map(o => o.id),
+                riders: riders.map(r => ({ id: r.id, status: r.status, busy: r.status === 'BUSY' || (r.active_orders && r.active_orders.length > 0) }))
+            });
+            if (container._lastCacheKey === newCacheKey) {
+                return; // Nothing changed! Keep dropdown open and DOM untouched!
+            }
+            container._lastCacheKey = newCacheKey;
+
+            // Preserve any currently selected options before re-rendering
+            const currentSelections = {};
+            document.querySelectorAll('[id^="assign_rider_"]').forEach(sel => {
+                if (sel.value) currentSelections[sel.id] = sel.value;
+            });
+
             container.innerHTML = unassigned.map(o => `
                 <div class="order-card" style="border-left: 4px solid var(--warning);">
                     <div class="order-meta">
@@ -224,33 +195,69 @@
                     <div>${o.item_desc} -> ${o.dropoff_address}</div>
                     <div style="display:flex; gap:0.5rem; margin-top:0.4rem;">
                         <select id="assign_rider_${o.id}" style="flex:2; background:var(--input-bg); color:var(--text-main); border:1px solid var(--input-border); border-radius:4px; font-size:0.75rem; padding:0.25rem;">
-                            ${riders.map(r => `<option value="${r.id}">${r.name} (${r.status})</option>`).join('')}
+                            <option value="">-- Select Rider --</option>
+                            ${riders.map(r => {
+                                const isBusy = r.status === 'BUSY' || (r.active_orders && r.active_orders.length > 0);
+                                return `<option value="${r.id}" ${isBusy ? 'disabled style="color:gray;"' : ''}>
+                                    ${r.name} (${r.status}${isBusy ? ' - UNAVAILABLE' : ''})
+                                </option>`;
+                            }).join('')}
                         </select>
                         <button class="btn-action" style="flex:1; padding:0.25rem 0.5rem; font-size:0.75rem;" onclick="assignOrder('${o.id}')">Assign</button>
                     </div>
                 </div>
             `).join('');
+
+            // Restore selections
+            Object.keys(currentSelections).forEach(id => {
+                const sel = document.getElementById(id);
+                if (sel && currentSelections[id]) sel.value = currentSelections[id];
+            });
         }
 
         function renderFleetStatus(riders) {
             const container = document.getElementById('fleetStatusList');
+            const fleetKey = JSON.stringify(riders.map(r => ({ id: r.id, status: r.status, len: (r.active_orders || []).length })));
+            if (container._lastFleetKey === fleetKey) return;
+            container._lastFleetKey = fleetKey;
+
             container.innerHTML = riders.map(r => `
                 <div style="display:flex; justify-content:space-between; align-items:center; background:var(--order-card-bg); border:1px solid var(--order-card-border); padding:0.5rem 0.75rem; border-radius:6px; font-size:0.8rem;">
                     <span><strong>${r.name}</strong></span>
-                    <span style="color:${r.status === 'AVAILABLE' ? 'var(--success)' : 'var(--warning)'}; font-weight:600;">${r.status} (${r.active_orders.length} active)</span>
+                    <span style="color:${r.status === 'AVAILABLE' ? 'var(--success)' : 'var(--warning)'}; font-weight:600;">${r.status} (${(r.active_orders || []).length} active)</span>
                 </div>
             `).join('');
         }
 
+        function onRiderChange() {
+            const t = document.getElementById('riderTaskList');
+            if (t) t._lastTasksKey = null;
+            loadRiderTasks();
+        }
+
         async function loadRiderTasks() {
-            const riderId = document.getElementById('riderSelect').value;
+            const riderSelect = document.getElementById('riderSelect');
+            const riderId = riderSelect ? riderSelect.value : 'RDR-01';
             const res = await fetch(`${API_BASE}/riders/${riderId}/tasks`);
             const data = await res.json();
             const container = document.getElementById('riderTaskList');
             const tasks = data.tasks || [];
 
+            // If user is currently typing in an OTP input field, DO NOT re-render
+            const activeElem = document.activeElement;
+            if (activeElem && activeElem.id && activeElem.id.startsWith('otp_input_')) {
+                return;
+            }
+
+            const tasksKey = JSON.stringify({
+                riderId: riderId,
+                tasks: tasks.map(t => ({ id: t.id, status: t.status, delivered_at: t.delivered_at }))
+            });
+            if (container._lastTasksKey === tasksKey) return;
+            container._lastTasksKey = tasksKey;
+
             if (tasks.length === 0) {
-                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; padding:1.5rem; text-align:center;">No active tasks assigned to this rider.</div>`;
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:0.8rem; padding:1.5rem; text-align:center; border:1px dashed var(--border-color); border-radius:8px;">No active tasks assigned to this rider.<br><span style="font-size:0.75rem;">(Assign an order in Column 2 or choose another rider above)</span></div>`;
                 return;
             }
 
@@ -260,53 +267,116 @@
                         <strong>${o.id}</strong>
                         <span class="status-pill status-${o.status}">${o.status.replace('_', ' ')}</span>
                     </div>
-                    <div>Item: <strong>${o.item_desc}</strong></div>
-                    <div>Drop-off: ${o.dropoff_address}</div>
+                    <div style="margin-top:0.2rem;"><strong>${o.item_desc}</strong></div>
+                    <div style="color:var(--text-muted); font-size:0.8rem;">Drop-off: ${o.dropoff_address}</div>
                     <div style="color:var(--primary); font-size:0.8rem;">Customer: ${o.customer_name} (${o.customer_phone})</div>
 
                     ${o.status === 'ASSIGNED' ? `
-                        <button class="btn-action btn-warning" style="margin-top:0.4rem;" onclick="pickupOrder('${o.id}', '${riderId}')">Confirm Package Pickup</button>
+                        <div style="background:rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.3); border-radius:6px; padding:8px; margin-top:0.6rem;">
+                            <div style="font-size:0.75rem; color:#60a5fa; font-weight:700;">📍 STEP 1: PICKUP FROM SHOP</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Head to retailer shop counter, collect parcel, and confirm below:</div>
+                            <button class="btn-action btn-warning" style="margin-top:0.5rem; width:100%; font-weight:700; padding:0.4rem 0.6rem;" onclick="pickupOrder('${o.id}', '${riderId}')">
+                                📦 Confirm Package Pickup
+                            </button>
+                        </div>
                     ` : ''}
 
                     ${o.status === 'PICKED_UP' ? `
-                        <div style="display:flex; gap:0.4rem; margin-top:0.4rem;">
-                            <input type="text" id="otp_input_${o.id}" placeholder="Enter Customer OTP" style="flex:2; background:var(--input-bg); color:var(--text-main); border:1px solid var(--input-border); border-radius:4px; padding:0.3rem; font-size:0.8rem;">
-                            <button class="btn-action btn-success" style="flex:1; font-size:0.75rem;" onclick="deliverOrder('${o.id}', '${riderId}')">Verify & Deliver</button>
+                        <div style="background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:8px; margin-top:0.6rem;">
+                            <div style="font-size:0.75rem; color:#f59e0b; font-weight:700;">🚀 STEP 2: DROP-OFF &amp; OTP VERIFICATION</div>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">At destination: ask customer for <strong>${o.id}</strong>'s 4-digit SMS OTP:</div>
+                            <div style="display:flex; gap:0.4rem; margin-top:0.5rem;">
+                                <input type="text" id="otp_input_${o.id}" maxlength="4" placeholder="4-Digit PIN" style="flex:2; background:var(--input-bg); color:var(--text-main); border:2px solid var(--primary); border-radius:6px; padding:0.4rem; font-size:0.95rem; font-weight:700; text-align:center; letter-spacing:4px;">
+                                <button class="btn-action btn-success" style="flex:1.4; font-size:0.78rem; font-weight:700;" onclick="deliverOrder('${o.id}', '${riderId}')">
+                                    ✓ Verify &amp; Deliver
+                                </button>
+                            </div>
                         </div>
                     ` : ''}
 
                     ${o.status === 'DELIVERED' ? `
-                        <div style="color:var(--success); font-weight:700; margin-top:0.3rem; font-size:0.8rem;">DELIVERED at ${o.delivered_at}</div>
+                        <div style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:6px; padding:8px; margin-top:0.6rem; color:var(--success); font-weight:700; font-size:0.8rem;">
+                            ✓ DELIVERED: Proof-of-delivery verified via Customer SMS OTP at ${o.delivered_at}
+                        </div>
                     ` : ''}
                 </div>
             `).join('');
         }
 
+        function invalidateCaches() {
+            const q = document.getElementById('dispatcherQueueList');
+            if (q) q._lastCacheKey = null;
+            const f = document.getElementById('fleetStatusList');
+            if (f) f._lastFleetKey = null;
+            const t = document.getElementById('riderTaskList');
+            if (t) t._lastTasksKey = null;
+        }
+
         async function createOrder(e) {
             e.preventDefault();
+            const custName = document.getElementById('custName').value.trim();
+            const custPhone = document.getElementById('custPhone').value.trim();
+            const dropoffAddr = document.getElementById('dropoffAddr').value.trim();
+            const itemDesc = document.getElementById('itemDesc').value.trim();
+            const orderVal = parseFloat(document.getElementById('orderVal').value);
+
+            // Validation 1: At least two names
+            const nameParts = custName.split(/\s+/);
+            if (nameParts.length < 2 || nameParts.some(p => p.length < 2)) {
+                alert("Validation Error: Customer name must include at least first and last name (at least 2 names).");
+                return;
+            }
+
+            // Validation 2: Max 10 digits numeric only
+            if (!/^\d{10}$/.test(custPhone)) {
+                alert("Validation Error: Phone number must be exactly 10 digits (e.g. 0700112233).");
+                return;
+            }
+
             const payload = {
                 retailer_name: "Luthuli Electronics Mart",
-                customer_name: document.getElementById('custName').value,
-                customer_phone: document.getElementById('custPhone').value,
-                dropoff_address: document.getElementById('dropoffAddr').value,
-                item_desc: document.getElementById('itemDesc').value,
-                order_value_kes: parseFloat(document.getElementById('orderVal').value)
+                customer_name: custName,
+                customer_phone: custPhone,
+                dropoff_address: dropoffAddr,
+                item_desc: itemDesc,
+                order_value_kes: orderVal
             };
-            await fetch(`${API_BASE}/orders`, {
+            const res = await fetch(`${API_BASE}/orders`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
+            const data = await res.json();
+            if (!data.success) {
+                alert(`Order Error: ${data.error}`);
+            }
+            invalidateCaches();
             fetchState();
         }
 
         async function assignOrder(orderId) {
-            const riderId = document.getElementById(`assign_rider_${orderId}`).value;
-            await fetch(`${API_BASE}/dispatch/assign`, {
+            const selectElem = document.getElementById(`assign_rider_${orderId}`);
+            const riderId = selectElem ? selectElem.value : null;
+            if (!riderId) {
+                alert("Please select an available rider to assign.");
+                return;
+            }
+            const res = await fetch(`${API_BASE}/dispatch/assign`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ order_id: orderId, rider_id: riderId })
             });
+            const data = await res.json();
+            if (!data.success) {
+                alert(`Assignment Error: ${data.error}`);
+            } else {
+                // Auto-switch Rider Mobile App (Column 3) to the assigned rider immediately!
+                const riderSelect = document.getElementById('riderSelect');
+                if (riderSelect && riderId) {
+                    riderSelect.value = riderId;
+                }
+            }
+            invalidateCaches();
             fetchState();
         }
 
@@ -316,11 +386,15 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ order_id: orderId, rider_id: riderId })
             });
+            invalidateCaches();
             fetchState();
         }
 
         async function deliverOrder(orderId, riderId) {
-            const otpCode = document.getElementById(`otp_input_${orderId}`).value;
+            const inputElem = document.getElementById(`otp_input_${orderId}`);
+            const rawOtp = inputElem ? inputElem.value : '';
+            const otpCode = rawOtp.replace(/\s+/g, '').trim();
+
             const res = await fetch(`${API_BASE}/riders/deliver`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -330,11 +404,13 @@
             if (!data.success) {
                 alert(`Verification Error: ${data.error}`);
             }
+            invalidateCaches();
             fetchState();
         }
 
         async function resetDemo() {
             await fetch(`${API_BASE}/system/reset`, { method: 'POST' });
+            invalidateCaches();
             fetchState();
         }
 
