@@ -64,9 +64,109 @@ delivery attempted before pickup.
 
 ## Member 3: Frontend UI and Interaction
 
+### Initial Understanding
+
+I needed to build a dashboard that supports three personas: Retailer, Dispatcher, and Rider. The key requirement was that all three views must sync to the same backend state without requiring a page refresh for each update.
+
+I chose a Single Page Application (SPA) approach with three panels that can be viewed together (Executive View) or individually. The view switching is controlled by the `switchView()` function, which toggles which panels are visible.
+
+### Implementation Approach
+
+Started by understanding the existing `index.html` file and its interaction with the backend API. The three main functions I worked with were:
+
+- `switchView(mode)`: Controls which persona panels are visible
+- `fetchState()`: Polls the backend every 4 seconds for updates
+- The order flow functions: `createOrder()`, `assignOrder()`, `pickupOrder()`, `deliverOrder()`
+
+The most significant change I made was adding a demo instructions banner above the view switcher to guide presenters through the live demo flow: "DEMO: Click 'Log Delivery' → Assign to Rider → Pickup → Enter OTP."
+
+### Challenges Faced
+
+**Challenge 1: Understanding the View Switcher Logic**
+- **Issue:** I didn't initially understand how `switchView()` controlled which panels were visible
+- **Fix:** I traced through the code and saw how it toggles `display: none/block` on the persona cards
+- **Learning:** `display: none` hides elements, `display: flex` shows them
+
+**Challenge 2: Git Remote Issues**
+- **Issue:** I pushed to the wrong repository (`git-test` instead of `reflex-delivery-system`)
+- **Fix:** I changed the remote URL using `git remote set-url origin`
+- **Learning:** Always check `git remote -v` before pushing
+
+**Challenge 3: Creating a Pull Request**
+- **Issue:** I got an "entirely different commit histories" error
+- **Fix:** Created a fresh branch from the correct `main`
+- **Learning:** Always start from the correct `main` when creating a PR
+
+**Challenge 4: View Mode Bug**
+- **Issue:** Switching view modes breaks the layout until you refresh
+- **Workaround:** Run the demo in "All 3 Personas" view – it renders fine
+- **Learning:** This is a render path issue in `index.html`, not a CSS problem
+
+### What I Learned
+
+1. **Frontend Architecture:** The UI uses a Single Page Application (SPA) approach with three personas sharing the same page. Executive View shows all three side-by-side for live demos.
+
+2. **HTTP Polling vs WebSockets:** Reflex uses 4-second polling to save battery on rider devices. The `fetchState()` function pulls updates from the backend. This is a deliberate trade-off – persistent WebSockets drain budget Android batteries within 4 hours.
+
+3. **State Synchronization:** All three personas sync from the same backend state. Orders move through: PENDING_DISPATCH → ASSIGNED → PICKED_UP → DELIVERED. OTP verification is handled by the rider panel.
+
+4. **Git Best Practices:** Always work on a branch, not `main`. Always check `git remote -v` before pushing. Start from the correct `main` when creating a PR.
+
+### Time Spent
+
+| Activity | Time |
+|----------|------|
+| Understanding code | 1.5 hours |
+| Adding demo banner | 30 minutes |
+| Fixing Git issues | 1 hour |
+| Testing | 30 minutes |
+| Writing documentation | 30 minutes |
+| **Total** | **4 hours** |
+
+### Key Takeaways
+
+1. Git remotes matter – always check where you're pushing
+2. Executive View is the best mode for live presentations
+3. 4-second polling is a deliberate trade-off for battery life
+4. The demo flow should be practiced until smooth
+5. Always work on a branch, not directly on `main`
+
 ## Member 4: Frontend Styling and Theming
 
-## Member 5: QA Testing and Technical Documentation
+## Member 5: Technical Documentation
+
+# REFLEX Delivery Synchronization Platform
+
+## Personal Learning and Adaptation
+
+My assigned responsibility in the REFLEX project was **project documentation**. My main task was to understand the system well enough to document its architecture, technical decisions, and limitations clearly.
+
+### What I Learned
+
+Through this responsibility, I learned how to:
+
+* Read and understand an existing codebase.
+* Translate technical implementation into simple documentation.
+* Create and explain a system architecture.
+* Document technical trade-offs and explain why decisions were made.
+* Identify the difference between what the system currently does and what is planned for the future.
+* Keep documentation consistent with the actual implementation.
+
+### How I Adapted
+
+Initially, I focused mainly on describing the system. As I reviewed the code, I learned that documentation must reflect **what is actually implemented**, not what we intended to build.
+
+I therefore adapted the documentation by:
+
+* Simplifying technical explanations.
+* Correcting assumptions that were not supported by the code.
+* Clearly separating current MVP features from future improvements.
+* Making the architecture and trade-offs easier for a non-technical audience to understand.
+
+### Key Lesson
+
+> **Good documentation is not just describing a system; it is understanding the system well enough to explain it accurately and simply.**
+
 
 ## Team-Level Adaptations
 
