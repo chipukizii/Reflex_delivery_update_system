@@ -132,7 +132,6 @@ The most significant change I made was adding a demo instructions banner above t
 5. Always work on a branch, not directly on `main`
 
 ## Member 4: Frontend Styling and Theming
-## Member 4: Frontend Styling and Theming
 
 ### Initial Understanding
 
