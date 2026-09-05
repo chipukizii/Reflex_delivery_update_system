@@ -2,6 +2,18 @@
 > Real-time delivery tracking for small urban retailers in Kenya.
 > Built during Reflex: The Readiness Sprint.
 
+## Live Demo
+
+**Deployed:** https://reflex-delivery-update-system.onrender.com/
+
+The instance sleeps after inactivity, so the first request may take up to
+a minute to wake.
+
+Use **All 3 Personas** view. Walk one order through: log a delivery
+request, assign a rider, confirm pickup, enter a wrong code to see it
+rejected, then the correct one. The full walkthrough is in
+`docs/DEMO_SCRIPT.md`.
+
 ---
 
 ## System Overview

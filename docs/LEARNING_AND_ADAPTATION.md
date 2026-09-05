@@ -72,6 +72,15 @@ Implemented backend/db.py: in-memory store, seed reset, four-state order machine
 
 ## Member 2: Backend API and Integration
 
+Maintained a detailed learning journal covering the Flask API
+layer, endpoint design, HTTP response contracts, input validation, CORS,
+identifier normalization, Git workflow challenges, and the demo reset
+endpoint.
+
+See MEMBER2_LEARNING_JOURNAL.md for the
+complete Member 2 learning and adaptation record.
+`
+
 ## Member 3: Frontend UI and Interaction
 
 ### Initial Understanding
