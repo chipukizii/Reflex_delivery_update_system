@@ -132,6 +132,37 @@ The most significant change I made was adding a demo instructions banner above t
 5. Always work on a branch, not directly on `main`
 
 ## Member 4: Frontend Styling and Theming
+## Member 4: Frontend Styling and Theming
+
+### Initial Understanding
+
+My responsibility was to handle the frontend styling and theming of the Reflex delivery synchronization platform. I understood that the interface needed to support the three main personas — retailer staff, dispatcher, and rider — while remaining clear, responsive, and easy to use on different screen sizes.
+
+My main focus was `frontend/static/styles.css`, including the dashboard layout, dark/light themes, forms, buttons, order cards, status indicators, OTP banner, and the rider's mobile interface.
+
+### Implementation Approach
+
+I started by defining reusable CSS variables for the application's colours, backgrounds, borders, text, status states, OTP elements, and shadows. I created both dark-theme defaults and light-theme overrides so the interface could switch between themes consistently.
+
+I then implemented the main three-column dashboard layout and added a single-view layout for individual personas. I styled the persona cards, headers, forms, inputs, select fields, and action buttons to create a consistent visual structure.
+
+For delivery tracking, I added distinct status pills for `PENDING_DISPATCH`, `ASSIGNED`, `PICKED_UP`, and `DELIVERED`. This makes the current state of an order easier to identify at a glance.
+
+I also implemented the OTP banner using a distinct background, dashed border, and monospace font. For the rider interface, I created a mobile phone frame effect to reflect the intended budget Android smartphone experience.
+
+Finally, I added responsive CSS rules for tablet and mobile screen sizes. This allowed the three-column layout to collapse into a single-column layout on smaller screens and adjusted spacing, buttons, headers, and the rider frame accordingly.
+
+### Adaptation and Learning
+
+During implementation, I had to think beyond simply making the page look good and consider how the styling would work with the existing HTML structure and different personas. I learned the importance of using CSS variables and reusable classes because they make theme changes and future adjustments much easier.
+
+I also learned how responsive design can be handled using CSS Grid and media queries rather than creating completely separate layouts for different devices.
+
+### Testing and Validation
+
+I reviewed the implemented CSS against the assigned styling requirements, checking that the required theme variables, dashboard grid, persona cards, forms, buttons, status badges, OTP banner, rider mobile frame, and responsive breakpoints were included.
+
+I also resolved a CSS conflict when preparing my branch for the pull request by retaining my frontend styling changes while resolving the difference with the `main` branch.
 
 ## Member 5: QA Testing and Technical Documentation
 
