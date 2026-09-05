@@ -143,6 +143,40 @@ The most significant change I made was adding a demo instructions banner above t
 
 ## Member 4: Frontend Styling and Theming
 
+## Member 5: Technical Documentation
+
+# REFLEX Delivery Synchronization Platform
+
+## Personal Learning and Adaptation
+
+My assigned responsibility in the REFLEX project was **project documentation**. My main task was to understand the system well enough to document its architecture, technical decisions, and limitations clearly.
+
+### What I Learned
+
+Through this responsibility, I learned how to:
+
+* Read and understand an existing codebase.
+* Translate technical implementation into simple documentation.
+* Create and explain a system architecture.
+* Document technical trade-offs and explain why decisions were made.
+* Identify the difference between what the system currently does and what is planned for the future.
+* Keep documentation consistent with the actual implementation.
+
+### How I Adapted
+
+Initially, I focused mainly on describing the system. As I reviewed the code, I learned that documentation must reflect **what is actually implemented**, not what we intended to build.
+
+I therefore adapted the documentation by:
+
+* Simplifying technical explanations.
+* Correcting assumptions that were not supported by the code.
+* Clearly separating current MVP features from future improvements.
+* Making the architecture and trade-offs easier for a non-technical audience to understand.
+
+### Key Lesson
+
+> **Good documentation is not just describing a system; it is understanding the system well enough to explain it accurately and simply.**
+
 ### Initial Understanding
 
 My responsibility was to handle the frontend styling and theming of the Reflex delivery synchronization platform. I understood that the interface needed to support the three main personas — retailer staff, dispatcher, and rider — while remaining clear, responsive, and easy to use on different screen sizes.
