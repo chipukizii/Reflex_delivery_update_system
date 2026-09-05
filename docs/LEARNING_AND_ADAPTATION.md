@@ -65,7 +65,6 @@ delivery attempted before pickup.
 ## Member 3: Frontend UI and Interaction
 
 ## Member 4: Frontend Styling and Theming
-## Member 4: Frontend Styling and Theming
 
 ### Initial Understanding
 
