@@ -60,6 +60,16 @@ successful delivery and the audit trail. I also checked by hand the two
 paths the suite does not reach: pickup attempted before assignment, and
 delivery attempted before pickup.
 
+### Key Learning
+
+The most useful thing I learned was that a passing test suite proves less than it appears to. Every one of my eight tests passed against an OTP generator that produced a literal string instead of a number, because the tests only checked that an OTP existed and then submitted that same value back to itself. Nothing asserted the shape of what was generated. I added a format assertion afterwards, but the lesson is that assertions have to test the property you actually care about, not the presence of a field.
+
+Code review also changed my approach twice. It caught that I was generating a delivery verification code with random, which is predictable, when an OTP is a credential and belongs in secrets. And it caught that I was writing the OTP itself into the audit log, putting the credential in plaintext in a record any caller can read. Both were things I would not have found by testing, because neither breaks anything.
+
+### Contribution Evidence
+
+Implemented backend/db.py: in-memory store, seed reset, four-state order machine, guarded transitions, OTP generation and verification, audit logging. Wrote tests/test_reflex.py, eleven tests covering the lifecycle and the state guards. Authored docs/TRADE_OFF_LOG.md, nine entries, four of them co-authored with Member 5. Reviewed and merged Member 4's styling branch.
+
 ## Member 2: Backend API and Integration
 
 ## Member 3: Frontend UI and Interaction
