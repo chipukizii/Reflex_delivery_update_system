@@ -35,8 +35,9 @@ layer to scope who may read an order. Removing it mid sprint would have
 broken the API layer and the test suite, which both read it.
 
 **With more time.** Strip `otp_code` from every read response and verify
-it server side only, so the code never leaves the backend. The customer
-would receive it out of band, by SMS.
+it server side only, so the code never leaves the backend. The prototype
+does not implement SMS transport; a production system would deliver the
+OTP through an authenticated customer channel.
 
 ## 3. All state is in memory and lost on restart
 

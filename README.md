@@ -115,5 +115,5 @@ PENDING_DISPATCH  →  ASSIGNED  →  PICKED_UP  →  DELIVERED
 - **Backend**: Python 3.12 / Flask
 - **Frontend**: Vanilla HTML, CSS, JavaScript
 - **Database**: In-memory relational store
-- **Auth/Verification**: 4-digit SMS OTP per order
+- **Auth/Verification**: 4-digit Customer OTP per order; no SMS transport is implemented
 - **Sync**: HTTP polling every 4 seconds

@@ -192,7 +192,7 @@ def rider_pickup():
 
 @app.route('/api/riders/deliver', methods=['POST'])
 def rider_deliver():
-    """Rider enters Customer SMS OTP PIN to verify drop-off."""
+    """Rider enters the Customer OTP PIN to verify drop-off."""
     data = request.get_json() or {}
     order_id = data.get('order_id')
     rider_id = data.get('rider_id')
